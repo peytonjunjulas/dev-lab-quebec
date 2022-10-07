@@ -44,22 +44,38 @@ MongoClient.connect(process.env.MONGO_URI, {
           console.log(req.body);
       })
 
-      app.delete('/players', (req, res) => {
-        playersCollection.deleteOne(
-          { player: req.body.player }
-        )
-          .then(result => {
-            if (result.deletedCount === 0) {
-              return res.json('No fav book to delete')
-            }
-            res.json('Deleted favorite book')
-          })
-          .catch(error => console.error(error))
-      })
+    //   app.delete('/players/:id', (req,res)=>{
+    //     const id=req.params.id;
+    
+    //     playersCollection.findOneAndDelete(id)
+    //       .then(data=>{
+    //         if(!data){
+    //             res.status(404).send({message: "cannot work"})
+    //         }else{
+    //             res.send({
+    //                 message:"User was deleted"
+    //             })
+    //         }
+    //       })
+    //       .catch(err=>{
+    //         res.status(500).send({
+    //             message:"cannot delete"
+    //         });
+    //       });
+    // })
+
+    app.delete('/players', (req,res)=>{
+      playersCollection.findOneAndDelete(
+        {id: req.body.id}
+      )
+      // .then(result => {
+      //   res.json(`Deleted Darth Vader's quote`)
+      // })
+      // .catch(error => console.error(error))
+    })
 
       app.listen(3000, function() {
           console.log("listening");
       })
-
-})
+  })
 .catch(error => console.error(error))
