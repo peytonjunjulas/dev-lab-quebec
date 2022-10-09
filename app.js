@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const { urlencoded } = require('body-parser');
 const MongoClient = require('mongodb').MongoClient
 const app = express();
+const { ObjectId } = require('mongodb');
 
 dotenv.config({path:'config.env'});
 
@@ -44,35 +45,39 @@ MongoClient.connect(process.env.MONGO_URI, {
           console.log(req.body);
       })
 
-    //   app.delete('/players/:id', (req,res)=>{
-    //     const id=req.params.id;
-    
-    //     playersCollection.findOneAndDelete(id)
-    //       .then(data=>{
-    //         if(!data){
-    //             res.status(404).send({message: "cannot work"})
-    //         }else{
-    //             res.send({
-    //                 message:"User was deleted"
-    //             })
-    //         }
-    //       })
-    //       .catch(err=>{
-    //         res.status(500).send({
-    //             message:"cannot delete"
-    //         });
-    //       });
-    // })
+      app.post('/deletePlayer/:id', async (req,res)=>{
+      
+        let result = await playersCollection.findOneAndDelete( 
+          {
+            "_id": ObjectId(req.params.id)
+          }
+        )
+        .then(result => {
+          console.log(result); 
+          res.redirect('/');
+        })
+        .catch(error => console.error(error))
+      })
 
-    app.delete('/players', (req,res)=>{
-      playersCollection.findOneAndDelete(
-        {id: req.body.id}
-      )
-      // .then(result => {
-      //   res.json(`Deleted Darth Vader's quote`)
-      // })
-      // .catch(error => console.error(error))
-    })
+      app.post('/updatePlayer/:id', async (req,res) => {
+        let result = await playersCollection.findOneAndUpdate(
+          {
+            "_id": ObjectId(req.params.id)
+          },
+          {
+            $set: {
+              name: 'Peyton Manning',
+              position: 'QB',
+              number: 18
+            }
+          }
+        )
+        .then(result => {
+          console.log(result); 
+          res.redirect('/');
+        })
+        .catch(error => console.error(error))
+      })
 
       app.listen(3000, function() {
           console.log("listening");
